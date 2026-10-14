@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0b0d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HOST DM">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" href="icons/icon-192.png">
+<title>HOST DM ANALYZER</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0b0d;--panel:#17171b;--panel2:#202026;--text:#f7f7f8;--muted:#a5a5ad;--line:#303037;--gold:#d8b56d;--green:#86d6a4;--red:#ff9d9d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;line-height:1.5}
+header{padding:calc(24px + env(safe-area-inset-top)) 18px 20px;background:linear-gradient(135deg,#202024,#0b0b0d 70%);border-bottom:1px solid var(--line)}
+.wrap{max-width:980px;margin:auto}.eyebrow{color:var(--gold);font-size:11px;letter-spacing:.22em;font-weight:800}
+h1{font-size:25px;letter-spacing:.04em;margin:6px 0 4px}.sub{color:var(--muted);font-size:13px}
+main{max-width:980px;margin:auto;padding:16px 14px calc(36px + env(safe-area-inset-bottom))}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.stat,.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:15px}
+.stat .label{font-size:12px;color:var(--muted)}.stat strong{display:block;font-size:25px;margin-top:4px}.stat small{color:var(--muted);font-size:11px}
+.section-title{font-size:16px;margin:0 0 12px}.card{margin-bottom:14px}.grid{display:grid;grid-template-columns:1fr;gap:12px}
+label{display:block;color:#d2d2d7;font-size:12px;margin:0 0 6px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #3a3a43;border-radius:10px;background:#101014;color:var(--text);font:inherit;font-size:16px;outline:none}
+textarea{resize:vertical;min-height:78px}input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+button{border:0;border-radius:10px;padding:13px 14px;font-weight:750;font-size:14px;cursor:pointer;min-height:44px}
+.primary{background:var(--gold);color:#17130b}.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--line)}.danger{background:#351b1b;color:#ffc4c4;border:1px solid #653232}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button{flex:1}
+.note{font-size:12px;color:var(--muted);margin-top:9px}
+.lead{border:1px solid var(--line);background:#111115;border-radius:12px;padding:12px;margin-top:9px}
+.leadtop{display:flex;justify-content:space-between;align-items:start;gap:8px}.leadname{font-weight:750;word-break:break-word}.meta{font-size:11px;color:var(--muted);margin-top:3px}
+.badge{display:inline-block;font-size:11px;color:var(--gold);border:1px solid #5e4b2b;border-radius:99px;padding:3px 8px;white-space:nowrap}
+.lead select{margin-top:10px}.lead .memo{font-size:13px;color:#c7c7ce;margin-top:8px;white-space:pre-wrap;word-break:break-word}
+.result{white-space:pre-wrap;background:#101014;border:1px solid var(--line);padding:13px;border-radius:10px;font-size:14px;min-height:70px}
+.analysis{background:#111115;border-radius:10px;padding:12px;font-size:13px;color:#dedee3}.analysis strong{color:var(--gold)}
+.empty{color:var(--muted);font-size:13px;padding:14px 0}.footer{font-size:11px;color:var(--muted);text-align:center;margin-top:18px}
+hr{border:0;border-top:1px solid var(--line);margin:14px 0}
+.install-tip{border:1px solid #5e4b2b;background:#17140e;border-radius:12px;padding:12px;margin-bottom:14px;font-size:12px;color:#ead9b4}
+@media(min-width:700px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.grid.two{grid-template-columns:1fr 1fr}header{padding:32px 22px 24px}main{padding:22px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><div class="eyebrow">YOUR SALES TOOL</div><h1>HOST DM ANALYZER</h1><div class="sub">Instagram営業を、感覚だけで終わらせない。</div></div></header>
+<main>
+  <div class="install-tip">🔒 顧客データはこのブラウザ内に保存されます。端末変更・ブラウザデータ削除に備えて、定期的にCSVバックアップを取ってください。</div>
+  <div class="stats">
+    <div class="stat"><div class="label">DM送信数</div><strong id="sent">0</strong><small>登録した顧客数（未接触・連絡終了を除く）</small></div>
+    <div class="stat"><div class="label">返信率</div><strong id="replyRate">0%</strong><small>返信あり以上 ÷ DM送信数</small></div>
+    <div class="stat"><div class="label">会話継続中</div><strong id="ongoing">0</strong><small>会話継続のステータス</small></div>
+    <div class="stat"><div class="label">来店率</div><strong id="visitRate">0%</strong><small>来店済み ÷ DM送信数</small></div>
+  </div>
+  <section class="card">
+    <h2 class="section-title">01 / 顧客を登録</h2>
+    <form id="leadForm">
+      <div class="grid two">
+        <div><label for="username">Instagram名・管理用の呼び名 *</label><input id="username" required maxlength="80" placeholder="例：カフェ好きさん"></div>
+        <div><label for="source">接点</label><select id="source"><option>投稿に反応</option><option>ストーリーに返信</option><option>共通の趣味</option><option>相手から問い合わせ</option><option>その他</option></select></div>
+        <div><label for="status">現在の状況</label><select id="status"><option>未接触</option><option selected>DM送信</option><option>返信あり</option><option>会話継続</option><option>来店予定</option><option>来店済み</option><option>再来店</option><option>連絡終了</option></select></div>
+        <div><label for="memo">会話メモ・次のアクション</label><textarea id="memo" maxlength="1000" placeholder="好きなこと、話した話題、次に聞くことなど"></textarea></div>
+      </div>
+      <div class="actions"><button class="primary" type="submit">顧客を登録する</button><button class="secondary" type="button" id="exportBtn">CSVを書き出す</button><button class="secondary" type="button" id="importBtn">CSVを読み込む</button><input type="file" id="importFile" accept=".csv,text/csv" hidden></div>
+      <div class="note">相手が断った場合や返信を望んでいない場合は、連絡を止めよう。</div>
+    </form>
+  </section>
+  <section class="card">
+    <h2 class="section-title">02 / DM文面アシスタント</h2>
+    <div class="grid two">
+      <div><label for="dmName">相手の呼び名（任意）</label><input id="dmName" placeholder="例：〇〇ちゃん"></div>
+      <div><label for="topic">話題</label><select id="topic"><option value="cafe">カフェ・旅行</option><option value="music">音楽</option><option value="fashion">ファッション</option><option value="story">ストーリーの投稿</option><option value="host">お店・ホストに興味がありそう</option></select></div>
+      <div><label for="tone">雰囲気</label><select id="tone"><option value="natural">自然体・親しみやすい</option><option value="adult">落ち着いた大人っぽさ</option><option value="charisma">自信のあるカリスマ系</option></select></div>
+      <div><label for="context">実際に見た投稿や共通点（任意）</label><input id="context" placeholder="例：栄のカフェの写真"></div>
+    </div>
+    <div class="actions"><button class="primary" id="generateBtn" type="button">DM案を作る</button><button class="secondary" id="copyBtn" type="button">文面をコピー</button></div>
+    <div id="dmResult" class="result" style="margin-top:12px">ここにDM案が表示されます。</div>
+    <div class="note">実際に見た内容をもとに短く自然に。相手に合わせて必ず読み直してから送信しよう。</div>
+  </section>
+  <section class="card">
+    <h2 class="section-title">03 / 数字から改善点を確認</h2>
+    <div id="analysis" class="analysis">顧客を登録すると、返信率や来店率に合わせて改善ヒントを表示します。</div>
+    <hr>
+    <div class="grid two">
+      <div><label for="search">顧客を検索</label><input id="search" placeholder="名前・メモで検索"></div>
+      <div><label for="filter">状況で絞り込み</label><select id="filter"><option value="">すべて</option><option>未接触</option><option>DM送信</option><option>返信あり</option><option>会話継続</option><option>来店予定</option><option>来店済み</option><option>再来店</option><option>連絡終了</option></select></div>
+    </div>
+    <div id="leadList"></div>
+    <div class="actions"><button class="danger" type="button" id="clearBtn">全データを削除</button></div>
+  </section>
+  <div class="footer">HOST DM ANALYZER · 端末内保存 · Instagramへの自動送信やログイン機能はありません。</div>
+</main>
+<script>
+const KEY='hostDmAnalyzer_v2';
+let leads=[];
+try{leads=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(leads))leads=[];}catch(e){leads=[];}
+const $=id=>document.getElementById(id);
+const statuses=['未接触','DM送信','返信あり','会話継続','来店予定','来店済み','再来店','連絡終了'];
+function save(){try{localStorage.setItem(KEY,JSON.stringify(leads));render();}catch(e){alert('保存できませんでした。端末の空き容量やブラウザ設定を確認してください。');}}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function rate(a,b){return b?Math.round(a/b*100):0;}
+function render(){
+ const sent=leads.filter(x=>x.status!=='未接触'&&x.status!=='連絡終了').length;
+ const replied=leads.filter(x=>['返信あり','会話継続','来店予定','来店済み','再来店'].includes(x.status)).length;
+ const ongoing=leads.filter(x=>x.status==='会話継続').length;
+ const visited=leads.filter(x=>['来店済み','再来店'].includes(x.status)).length;
+ $('sent').textContent=sent;$('replyRate').textContent=rate(replied,sent)+'%';$('ongoing').textContent=ongoing;$('visitRate').textContent=rate(visited,sent)+'%';
+ let advice='';
+ if(sent===0) advice='まずは相手の投稿やストーリーに自然な接点を作り、送った相手を登録しよう。';
+ else if(sent<5) advice='まだデータが少ない段階。まず5〜10件を目安に、相手ごとに内容を変えて記録しよう。';
+ else if(rate(replied,sent)<15) advice='返信率が低め。営業感の強い誘い文句を避け、相手の投稿に具体的に触れた短い質問で会話を始めよう。返信がない場合は追撃しすぎない。';
+ else if(rate(replied,sent)<35) advice='返信率は伸ばせる余地あり。返信があったDMの話題・長さ・きっかけをメモし、似た条件で試そう。';
+ else advice='返信率は良い傾向。すぐ来店を迫らず、会話が続く相手には興味を聞き、希望があればお店の情報をわかりやすく案内しよう。';
+ if(sent&&rate(visited,sent)===0&&replied>=3) advice+=' 来店がまだなら、相手の興味や都合を確認し、無理に誘わず選択肢として案内してみよう。';
+ $('analysis').innerHTML='<strong>改善ヒント：</strong> '+esc(advice);
+ const q=$('search').value.trim().toLowerCase(),f=$('filter').value;
+ const list=leads.filter(x=>(!f||x.status===f)&&(!q||(x.name+' '+x.memo+' '+x.source).toLowerCase().includes(q))).sort((a,b)=>b.created-a.created);
+ if(!list.length){$('leadList').innerHTML='<div class="empty">登録した顧客はまだいません。上のフォームから追加できます。</div>';return;}
+ $('leadList').innerHTML=list.map(x=>`<div class="lead"><div class="leadtop"><div><div class="leadname">${esc(x.name)}</div><div class="meta">${esc(x.source)} · 登録 ${new Date(x.created).toLocaleDateString('ja-JP')}</div></div><span class="badge">${esc(x.status)}</span></div>${x.memo?`<div class="memo">${esc(x.memo)}</div>`:''}<div class="grid two" style="margin-top:10px"><div><label>状況を更新</label><select data-status="${esc(x.id)}">${statuses.map(s=>`<option ${s===x.status?'selected':''}>${s}</option>`).join('')}</select></div><div class="actions" style="margin-top:0;align-items:end"><button class="secondary" data-edit="${esc(x.id)}">メモ編集</button><button class="danger" data-delete="${esc(x.id)}">削除</button></div></div></div>`).join('');
+}
+$('leadForm').addEventListener('submit',e=>{e.preventDefault();const name=$('username').value.trim();if(!name)return;leads.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name,source:$('source').value,status:$('status').value,memo:$('memo').value.trim(),created:Date.now()});save();$('username').value='';$('memo').value='';$('status').value='DM送信';});
+$('leadList').addEventListener('change',e=>{const id=e.target.dataset.status;if(!id)return;const x=leads.find(x=>x.id===id);if(x){x.status=e.target.value;save();}});
+$('leadList').addEventListener('click',e=>{const del=e.target.dataset.delete,edit=e.target.dataset.edit;if(del){const x=leads.find(x=>x.id===del);if(x&&confirm('「'+x.name+'」を削除しますか？')){leads=leads.filter(y=>y.id!==del);save();}}if(edit){const x=leads.find(x=>x.id===edit);if(x){const m=prompt('メモを編集',x.memo||'');if(m!==null){x.memo=m;save();}}}});
+$('search').addEventListener('input',render);$('filter').addEventListener('change',render);
+function makeDM(){
+ const name=$('dmName').value.trim(),topic=$('topic').value,tone=$('tone').value,context=$('context').value.trim();
+ const opener=context?`投稿見たよ。${context}、いいね！`:
+ topic==='cafe'?'カフェとか旅行好きなんだね！最近どこか行ってよかったところある？':
+ topic==='music'?'音楽好きなんだね！最近よく聴いてる曲ある？':
+ topic==='fashion'?'その雰囲気いいね！服選ぶときってどんな系統が好き？':
+ topic==='story'?'ストーリー見たよ！それ気になったんだけど、どうだった？':
+ 'ホストのお店って行ったことある？もし興味あれば雰囲気とか気軽に話せるよ。';
+ const prefix=name?`${name}、`:'';
+ let result='';
+ if(tone==='charisma') result=`${prefix}${opener}\n無理に話を広げるつもりはないけど、ちょっと気になってDMした。よかったらおすすめ教えて。`;
+ else if(tone==='adult') result=`${prefix}${opener}\nよかったら、もう少し話してみたいなと思ってDMしました。`;
+ else result=`${prefix}${opener}\nよかったら教えて〜！`;
+ $('dmResult').textContent=result;
+}
+$('generateBtn').addEventListener('click',makeDM);
+$('copyBtn').addEventListener('click',async()=>{const text=$('dmResult').textContent;if(!text||text==='ここにDM案が表示されます。')return;try{await navigator.clipboard.writeText(text);alert('DM文面をコピーしました');}catch(e){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();alert('DM文面をコピーしました');}});
+$('exportBtn').addEventListener('click',()=>{if(!leads.length){alert('書き出す顧客データがありません');return;}const rows=[['名前','接点','状況','メモ','登録日'],...leads.map(x=>[x.name,x.source,x.status,x.memo,new Date(x.created).toLocaleDateString('ja-JP')])];const csv='\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='host-dm-customers.csv';a.click();URL.revokeObjectURL(url);});
+$('importBtn').addEventListener('click',()=>$('importFile').click());
+$('importFile').addEventListener('change',async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  const raw=(await file.text()).replace(/^\uFEFF/,'');
+  const rows=[];let row=[],cell='',quoted=false;
+  for(let i=0;i<raw.length;i++){const c=raw[i];if(c==='"'&&quoted&&raw[i+1]==='"'){cell+='"';i++;}else if(c==='"'){quoted=!quoted;}else if(c===','&&!quoted){row.push(cell);cell='';}else if((c==='\n'||c==='\r')&&!quoted){if(c==='\r'&&raw[i+1]==='\n')i++;row.push(cell);if(row.some(v=>v!==''))rows.push(row);row=[];cell='';}else cell+=c;}
+  if(cell!==''||row.length){row.push(cell);rows.push(row);}
+  const data=rows.slice(1).filter(r=>r[0]).map(r=>({id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),name:r[0]||'',source:r[1]||'CSV読み込み',status:statuses.includes(r[2])?r[2]:'DM送信',memo:r[3]||'',created:Date.now()}));
+  if(data.length){if(confirm(`${data.length}件を追加しますか？（既存データは残ります）`)){leads=leads.concat(data);save();alert('読み込みました');}}
+  else alert('読み込めるデータがありません。アプリのCSV形式を確認してください。');
+ }catch(err){alert('CSVを読み込めませんでした。ファイル形式を確認してください。')}
+ e.target.value='';
+});
+$('clearBtn').addEventListener('click',()=>{if(confirm('登録した全データを削除します。この操作は元に戻せません。先にCSVバックアップを取ってください。')){leads=[];save();}});
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./service-worker.js').catch(()=>{}));}
+render();
+</script>
+</body></html>
